@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import userRouter from './routes/user.route.js';
 import dotenv from 'dotenv';
 import authRouter from './routes/auth.route.js';
+import { error } from 'console';
 dotenv.config();
 
 const mongo = process.env.MONGO;
@@ -19,6 +20,15 @@ mongoose
 
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/auth', authRouter);
+app.use((error, req, res, next)=>{
+    const statusCode= error.statusCode || 500
+    const message = error.message || "internal Servr error"
+    return res.status(statusCode).json({
+        success: false,
+        statusCode,
+        message,
+    })
+})
 
 const port = process.env.PORT;
 app.listen(port, () => {
