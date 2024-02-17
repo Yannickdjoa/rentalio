@@ -3,6 +3,12 @@ import {
     updateUserStart,
     updateUserSuccess,
     updateUserFailure,
+    deleteUserStart,
+    deleteUserFailure,
+    deleteUserSuccess,
+    signOutStart,
+    signOutFailure,
+    signOutSuccess,
 } from '../redux/user/userSlice.js'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -78,6 +84,34 @@ function Profile() {
             dispatch(updateUserFailure(error.message))
         }
     }
+    const handleDeleteUser = async () => {
+        dispatch(deleteUserStart())
+        try {
+            const res = await fetch(`api/user/delete/${currentUser._id}`, {
+                method: 'DELETE',
+            })
+            const data = await res.json()
+            if (data.success === false) {
+                dispatch(deleteUserFailure(error.message))
+            }
+            dispatch(deleteUserSuccess(data))
+        } catch (error) {
+            dispatch(deleteUserFailure(error.message))
+        }
+    }
+    const handleSignOut = async () => {
+        dispatch(signOutStart())
+        try {
+            const res = await fetch('/api/auth/signout')
+            const data = await res.json()
+            if (data.success === false) {
+                dispatch(signOutFailure(error.message))
+            }
+            dispatch(signOutSuccess(data))
+        } catch (error) {
+            dispatch(signOutFailure(error.message))
+        }
+    }
     return (
         <div className="p-3 max-w-lg mx-auto">
             <form onClick={handleSubmit} className=" flex flex-col gap-4">
@@ -142,12 +176,14 @@ function Profile() {
             </form>
             <div className="flex justify-between mt-5">
                 <span
+                    onClick={handleDeleteUser}
                     className="text-red-700
               cursor-pointer"
                 >
                     delete account
                 </span>
                 <span
+                    onClick={handleSignOut}
                     className="text-red-700
               cursor-pointer"
                 >
