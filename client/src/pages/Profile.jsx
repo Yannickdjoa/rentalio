@@ -18,9 +18,10 @@ import {
     uploadBytesResumable,
 } from 'firebase/storage'
 import { app } from '../firebase'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 function Profile() {
+    const params = useParams()
     const { currentUser, loading, error } = useSelector((state) => state.user)
     const fileRef = useRef(null)
     const [file, setFile] = useState(undefined)
@@ -29,6 +30,7 @@ function Profile() {
     const [formData, setFormData] = useState({})
     const [showListingError, setShowListingError] = useState(false)
     const [userListings, setUserListings] = useState([])
+    console.log(userListings)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -119,13 +121,33 @@ function Profile() {
         try {
             setShowListingError(false)
             const res = await fetch(`/api/user/listings/${currentUser._id}`)
-            const data = await json(res)
+            const data = await res.json()
+            console.log(data)
             if (data.success === false) {
                 setShowListingError(true)
+                return
             }
             setUserListings(data)
         } catch (error) {
             setShowListingError(true)
+        }
+    }
+
+    const handleDeleteListing = async (listingId) => {
+        try {
+            const res = await fetch(`api/listing/delete/${listingId}`, {
+                method: 'DELETE',
+            })
+            const data = await res.json()
+            if (data.success === false) {
+                console.log(data.message)
+                return
+            }
+            setUserListings((prev) =>
+                prev.filter((listing) => listing._id !== listingId),
+            )
+        } catch (error) {
+            console.log(error.message)
         }
     }
     return (
@@ -214,7 +236,7 @@ function Profile() {
             </div>
             <p className="text-red-700">{error ? error : ''}</p>
             <p>{updateUserSuccess ? 'User is updated successfully!' : ''}</p>
-            <button className="text-green-700" on onClick={showListings}>
+            <button className="text-green-700" onClick={showListings}>
                 Show Listings
             </button>
             <p className="text-red-700">
@@ -226,7 +248,10 @@ function Profile() {
                         Your Listings
                     </h1>
                     {userListings.map((listing) => (
-                        <div className="flex flex-col p-3 justify-between items-center gap-4">
+                        <div
+                            key={listing._id}
+                            className="flex flex-row p-3 justify-between items-center gap-4"
+                        >
                             <Link to={`listing/${listing._id}`}>
                                 <img
                                     src={listing.imageUrls[0]}
@@ -240,13 +265,20 @@ function Profile() {
                             >
                                 <p>{listing.name}</p>
                             </Link>
-                            <div className="flex flex-row">
-                                <button className="text-red-700 uppercase">
+                            <div className="flex flex-row gap-3">
+                                <button
+                                    onClick={() =>
+                                        handleDeleteListing(listing._id)
+                                    }
+                                    className="text-red-700 uppercase"
+                                >
                                     Delete
                                 </button>
-                                <button className="text-green-700 uppercase">
-                                    edit
-                                </button>
+                                <Link to={`/update-listing/${listing._id}`}>
+                                    <button className="text-green-700 uppercase">
+                                        edit
+                                    </button>
+                                </Link>
                             </div>
                         </div>
                     ))}

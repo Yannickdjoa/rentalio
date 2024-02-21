@@ -8,6 +8,7 @@ import About from './pages/About'
 import CreateListing from './pages/CreateListing'
 import Header from './components/Header'
 import PrivateRoute from './components/PrivateRoute'
+import UpdateListing from './pages/UpdateListing'
 
 function App() {
     return (
@@ -21,6 +22,11 @@ function App() {
                         exact
                         path="/create-listing"
                         Component={CreateListing}
+                    />
+                    <Route
+                        exact
+                        path="/update-listing/:listingId"
+                        Component={UpdateListing}
                     />
                 </Route>
 

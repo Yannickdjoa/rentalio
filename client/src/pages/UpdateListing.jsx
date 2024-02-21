@@ -4,12 +4,13 @@ import {
     ref,
     uploadBytesResumable,
 } from 'firebase/storage'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { app } from '../firebase'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
-function CreateListing() {
+function UpdateListing() {
+    const params = useParams()
     const navigate = useNavigate()
     const { currentUser } = useSelector((state) => state.user)
     const [files, setFiles] = useState([])
@@ -32,7 +33,18 @@ function CreateListing() {
     const [error, setError] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    console.log(formData)
+    useEffect(() => {
+        const fetchListing = async () => {
+            const listingId = params.listingId
+            const res = await fetch(`/api/listing/get/${listingId}`)
+            const data = await res.json()
+            if (data.success === false) {
+                console.log(data.message)
+            }
+            setFormData(data)
+        }
+        fetchListing()
+    }, [])
     const handleUpload = (e) => {
         if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
             setUploading(true)
@@ -120,18 +132,27 @@ function CreateListing() {
             if (formData.imageUrls.length < 1) {
                 return setError('You must upload at least 1 image')
             }
-            if (formData.regularPrice < formData.discountPrice) {
+            if (+formData.regularPrice < +formData.discountPrice) {
                 return setError('discounted price must be lower')
             }
             setLoading(true)
-            const response = await fetch('api/listing/create', {
-                method: 'POST',
+            setError(false)
+            const res = await fetch(`/api/listing/update/${params.listingId}`, {
+                method: 'PUT',
                 headers: {
-                    'content-type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...formData, userRef: currentUser._id }),
+                body: JSON.stringify(
+                    {
+                        ...formData,
+                        userRef: currentUser._id,
+                    },
+                    { new: true },
+                ),
             })
-            const data = await response.json()
+
+            console.log(res)
+            const data = await res.json()
             setLoading(false)
             if (data.success === false) {
                 setError(data.message)
@@ -146,7 +167,7 @@ function CreateListing() {
     return (
         <main className="p-3 max-w-4xl mx-auto">
             <h1 className="text-3xl my-7 font-semibold text-center">
-                Create a Listing
+                Update a Listing
             </h1>
             <form
                 onSubmit={handleSubmit}
@@ -348,19 +369,19 @@ function CreateListing() {
                                 </button>
                             </div>
                         ))}
-                    <div>
-                        <button
-                            disabled={loading || uploading}
-                            type="submit"
-                            className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-                        >
-                            {loading ? 'creating listing...' : 'create listing'}
-                        </button>
-                    </div>
+
+                    <button
+                        disabled={loading || uploading}
+                        type="submit"
+                        className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+                    >
+                        {loading ? 'updating listing...' : 'update listing'}
+                    </button>
+                    {error && <p className="text-red-700 text-sm">{error}</p>}
                 </div>
             </form>
         </main>
     )
 }
 
-export default CreateListing
+export default UpdateListing
