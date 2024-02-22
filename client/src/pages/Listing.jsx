@@ -154,14 +154,14 @@ function Listing() {
 
                         {currentUser &&
                             listing.userRef !== currentUser._id &&
-                            !contact(
+                            !contact && (
                                 <button
                                     onClick={() => setContact(true)}
-                                    className="text-center uppercase p-3 rounded-lg bg-slate-700 text-white"
+                                    className="text-center uppercase p-3 rounded-lg bg-slate-700 text-white hover:opcacity-700"
                                 >
                                     {' '}
                                     Contact The landload
-                                </button>,
+                                </button>
                             )}
                         {contact && <Contact listing={listing} />}
                     </div>
