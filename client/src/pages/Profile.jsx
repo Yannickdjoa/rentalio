@@ -252,7 +252,7 @@ function Profile() {
                             key={listing._id}
                             className="flex flex-row p-3 justify-between items-center gap-4"
                         >
-                            <Link to={`listing/${listing._id}`}>
+                            <Link to={`/listing/${listing._id}`}>
                                 <img
                                     src={listing.imageUrls[0]}
                                     alt="listing cover"
@@ -260,7 +260,7 @@ function Profile() {
                                 />
                             </Link>
                             <Link
-                                to={`listing/${listing._id}`}
+                                to={`/listing/${listing._id}`}
                                 className="text-slate-700 font-semibold flex-1 truncate hover:underline"
                             >
                                 <p>{listing.name}</p>
