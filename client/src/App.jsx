@@ -10,6 +10,7 @@ import Header from './components/Header'
 import PrivateRoute from './components/PrivateRoute'
 import UpdateListing from './pages/UpdateListing'
 import Listing from './pages/Listing'
+import Search from './pages/Search'
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                 <Route exact path="/sign-up" Component={SignUp} />
                 <Route exact path="/about" Component={About} />
                 <Route exact path="/listing/:listingId" Component={Listing} />
+                <Route exact path="/search" Component={Search} />
 
                 <Route Component={PrivateRoute}>
                     <Route exact path="/profile" Component={Profile} />
