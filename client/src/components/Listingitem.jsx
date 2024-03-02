@@ -3,12 +3,6 @@ import { Link } from 'react-router-dom'
 import { MdLocationOn } from 'react-icons/md'
 
 function Listingitem({ listing }) {
-    try {
-        console.log(listing)
-    } catch (error) {
-        console.log(error)
-    }
-
     return (
         <div className="bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px] flex-wrap">
             <Link to={`/listing/${listing._id}`}>
@@ -38,6 +32,7 @@ function Listingitem({ listing }) {
                     </p>
 
                     <p>
+                        $
                         {listing.offer
                             ? listing.discountPrice.toLocaleString('en-US')
                             : listing.listingPrice.toLocaleString('en-US')}

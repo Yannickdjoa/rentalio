@@ -17,7 +17,7 @@ function Search() {
         sort: 'createdAt',
         order: 'desc',
     })
-    console.log(listings)
+    console.log(sidebardata)
     useEffect(() => {
         const urlParams = new URLSearchParams(location.search)
         const searchTermFromUrl = urlParams.get('searchTerm')
@@ -48,11 +48,12 @@ function Search() {
         }
         const fetchListings = async () => {
             setLoading(true)
-            const searchQuery = sidebardata.toString()
+            setShowMore(false)
+            const searchQuery = urlParams.toString()
             const response = await fetch(`/api/listing/get?${searchQuery}`)
             const data = await response.json()
-            
-            if (data.length > 6) {
+
+            if (data.length > 5) {
                 setShowMore(true)
             } else {
                 setShowMore(false)
@@ -108,12 +109,25 @@ function Search() {
         navigate(`/search?${searchQuery}`)
     }
 
-    const showMoreItems = () => {}
+    const showMoreItems = async () => {
+        const numberOfItems = listings.length
+        const startIndex = numberOfItems
+        const urlParams = new URLSearchParams(location.search)
+        urlParams.set('startIndex', startIndex)
+        const searchQuery = urlParams.toString()
+        const res = await fetch(`/api/listing/get?${searchQuery}`)
+        const data = await res.json()
+        console.log(data)
+        if (data.length < 6) {
+            setShowMore(false)
+        }
+        setListings([...listings, ...data])
+    }
 
     return (
         <main className="flex flex-col md:flex-row">
             <div className="p-7  border-b-2 md:border-r-2 md:min-h-screen">
-                <form onClick={handleSubmit} className="flex flex-col gap-8">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-8">
                     <div className="flex gap-2 items-center">
                         <label className="whitespace-nowrap font-semibold">
                             Search Term
@@ -209,10 +223,10 @@ function Search() {
                         >
                             <option value="createdAt_desc">Latest</option>
                             <option value="createdAt_asc">Oldest</option>
-                            <option value="regularPrice_asc">
+                            <option value="listingPrice_asc">
                                 Price high to low
                             </option>
-                            <option value="regularPrice_desc">
+                            <option value="listingPrice_desc">
                                 Price low to high
                             </option>
                         </select>
@@ -246,7 +260,10 @@ function Search() {
                             <Listingitem key={listing._id} listing={listing} />
                         ))}
                     {showMore && (
-                        <button type="button" onClick={showMoreItems}>
+                        <button
+                            onClick={showMoreItems}
+                            className="text-green-700 hover:underline p-7 text-center w-full"
+                        >
                             Show More
                         </button>
                     )}
