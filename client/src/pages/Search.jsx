@@ -68,7 +68,7 @@ function Search() {
         if (
             e.target.id === 'all' ||
             e.target.id === 'rent' ||
-            e.target.id === 'sale'
+            e.target.id === 'sell'
         ) {
             setSidebardata({ ...sidebardata, type: e.target.id })
         }
@@ -171,7 +171,7 @@ function Search() {
                                 onChange={handleChange}
                                 checked={sidebardata.type === 'sale'}
                                 type="checkbox"
-                                id="sale"
+                                id="sell"
                                 className="w-5"
                             />
                             <span>Sale</span>

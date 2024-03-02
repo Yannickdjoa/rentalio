@@ -23,6 +23,7 @@ function Listing() {
     const [copied, setCopied] = useState(false)
     const [timeOut, setTimeOut] = useState(false)
     const [contact, setContact] = useState(false)
+    SwiperCore.use([Navigation])
 
     useEffect(() => {
         try {
@@ -98,8 +99,8 @@ function Listing() {
                         <p className="font-semibold text-2xl">
                             {listing.name} - ${''}
                             {listing.offer
-                                ? listing.discountPrice.toLocaleString('en-US')
-                                : listing.regularPrice.toLocaleString('en-US')}
+                                ? listing.discountPrice
+                                : listing.regularPrice}
                             {listing.type === 'rent' && '/month'}
                         </p>
                         <p className="text-slate-600 text-sm flex items-center gap-3 mt-6">
